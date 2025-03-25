@@ -6,7 +6,7 @@ package onramp
 import (
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"testing"
@@ -25,7 +25,7 @@ func TestBareGarlic(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	log.Println("listener:", listener.Addr().String())
+	i2plog.Println("listener:", listener.Addr().String())
 	defer listener.Close()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q", r.URL.Path)
@@ -52,7 +52,7 @@ func TestBareGarlic(t *testing.T) {
 	}
 	defer resp.Body.Close()
 	fmt.Println(resp.Status)
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,7 +62,7 @@ func TestBareGarlic(t *testing.T) {
 
 func Serve(listener net.Listener) {
 	if err := http.Serve(listener, nil); err != nil {
-		log.Fatal(err)
+		i2plog.Fatal(err)
 	}
 }
 
@@ -70,6 +70,6 @@ func Sleep(count int) {
 	for i := 0; i < count; i++ {
 		time.Sleep(time.Second)
 		x := count - i
-		log.Printf("Waiting: %d seconds\n", x)
+		i2plog.Printf("Waiting: %d seconds\n", x)
 	}
 }

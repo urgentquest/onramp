@@ -62,28 +62,28 @@ var TLS_KEYSTORE_PATH = tlsdefault
 // path is not set, it returns the default path. If the path does
 // not exist, it creates it.
 func I2PKeystorePath() (string, error) {
-	log.WithField("path", I2P_KEYSTORE_PATH).Debug("Checking I2P keystore path")
+	i2plog.WithField("path", I2P_KEYSTORE_PATH).Debug("Checking I2P keystore path")
 	if _, err := os.Stat(I2P_KEYSTORE_PATH); err != nil {
-		log.WithField("path", I2P_KEYSTORE_PATH).Debug("I2P keystore directory does not exist, creating")
+		i2plog.WithField("path", I2P_KEYSTORE_PATH).Debug("I2P keystore directory does not exist, creating")
 		err := os.MkdirAll(I2P_KEYSTORE_PATH, 0755)
 		if err != nil {
-			log.WithError(err).WithField("path", I2P_KEYSTORE_PATH).Error("Failed to create I2P keystore directory")
+			i2plog.WithError(err).WithField("path", I2P_KEYSTORE_PATH).Error("Failed to create I2P keystore directory")
 			return "", err
 		}
 	}
-	log.WithField("path", I2P_KEYSTORE_PATH).Debug("I2P keystore path verified")
+	i2plog.WithField("path", I2P_KEYSTORE_PATH).Debug("I2P keystore path verified")
 	return I2P_KEYSTORE_PATH, nil
 }
 
 // DeleteI2PKeyStore deletes the I2P Keystore.
 func DeleteI2PKeyStore() error {
-	log.WithField("path", I2P_KEYSTORE_PATH).Debug("Attempting to delete I2P keystore")
+	i2plog.WithField("path", I2P_KEYSTORE_PATH).Debug("Attempting to delete I2P keystore")
 	err := os.RemoveAll(I2P_KEYSTORE_PATH)
 	if err != nil {
-		log.WithError(err).WithField("path", I2P_KEYSTORE_PATH).Error("Failed to delete I2P keystore")
+		i2plog.WithError(err).WithField("path", I2P_KEYSTORE_PATH).Error("Failed to delete I2P keystore")
 		return err
 	}
-	log.WithField("path", I2P_KEYSTORE_PATH).Debug("Successfully deleted I2P keystore")
+	i2plog.WithField("path", I2P_KEYSTORE_PATH).Debug("Successfully deleted I2P keystore")
 	return nil
 	//return os.RemoveAll(I2P_KEYSTORE_PATH)
 }
@@ -92,28 +92,28 @@ func DeleteI2PKeyStore() error {
 // path is not set, it returns the default path. If the path does
 // not exist, it creates it.
 func TorKeystorePath() (string, error) {
-	log.WithField("path", ONION_KEYSTORE_PATH).Debug("Checking Tor keystore path")
+	i2plog.WithField("path", ONION_KEYSTORE_PATH).Debug("Checking Tor keystore path")
 	if _, err := os.Stat(ONION_KEYSTORE_PATH); err != nil {
-		log.WithField("path", ONION_KEYSTORE_PATH).Debug("Tor keystore directory does not exist, creating")
+		i2plog.WithField("path", ONION_KEYSTORE_PATH).Debug("Tor keystore directory does not exist, creating")
 		err := os.MkdirAll(ONION_KEYSTORE_PATH, 0755)
 		if err != nil {
-			log.WithError(err).WithField("path", ONION_KEYSTORE_PATH).Error("Failed to create Tor keystore directory")
+			i2plog.WithError(err).WithField("path", ONION_KEYSTORE_PATH).Error("Failed to create Tor keystore directory")
 			return "", err
 		}
 	}
-	log.WithField("path", ONION_KEYSTORE_PATH).Debug("Tor keystore path verified")
+	i2plog.WithField("path", ONION_KEYSTORE_PATH).Debug("Tor keystore path verified")
 	return ONION_KEYSTORE_PATH, nil
 }
 
 // DeleteTorKeyStore deletes the Onion Keystore.
 func DeleteTorKeyStore() error {
-	log.WithField("path", ONION_KEYSTORE_PATH).Debug("Attempting to delete Tor keystore")
+	i2plog.WithField("path", ONION_KEYSTORE_PATH).Debug("Attempting to delete Tor keystore")
 	err := os.RemoveAll(ONION_KEYSTORE_PATH)
 	if err != nil {
-		log.WithError(err).WithField("path", ONION_KEYSTORE_PATH).Error("Failed to delete Tor keystore")
+		i2plog.WithError(err).WithField("path", ONION_KEYSTORE_PATH).Error("Failed to delete Tor keystore")
 		return err
 	}
-	log.WithField("path", ONION_KEYSTORE_PATH).Debug("Successfully deleted Tor keystore")
+	i2plog.WithField("path", ONION_KEYSTORE_PATH).Debug("Successfully deleted Tor keystore")
 	return nil
 	//return os.RemoveAll(ONION_KEYSTORE_PATH)
 }
@@ -122,28 +122,28 @@ func DeleteTorKeyStore() error {
 // path is not set, it returns the default path. If the path does
 // not exist, it creates it.
 func TLSKeystorePath() (string, error) {
-	log.WithField("path", TLS_KEYSTORE_PATH).Debug("Checking TLS keystore path")
+	i2plog.WithField("path", TLS_KEYSTORE_PATH).Debug("Checking TLS keystore path")
 	if _, err := os.Stat(TLS_KEYSTORE_PATH); err != nil {
-		log.WithField("path", TLS_KEYSTORE_PATH).Debug("TLS keystore directory does not exist, creating")
+		i2plog.WithField("path", TLS_KEYSTORE_PATH).Debug("TLS keystore directory does not exist, creating")
 		err := os.MkdirAll(TLS_KEYSTORE_PATH, 0755)
 		if err != nil {
-			log.WithError(err).WithField("path", TLS_KEYSTORE_PATH).Error("Failed to create TLS keystore directory")
+			i2plog.WithError(err).WithField("path", TLS_KEYSTORE_PATH).Error("Failed to create TLS keystore directory")
 			return "", err
 		}
 	}
-	log.WithField("path", TLS_KEYSTORE_PATH).Debug("TLS keystore path verified")
+	i2plog.WithField("path", TLS_KEYSTORE_PATH).Debug("TLS keystore path verified")
 	return TLS_KEYSTORE_PATH, nil
 }
 
 // DeleteTLSKeyStore deletes the TLS Keystore.
 func DeleteTLSKeyStore() error {
-	log.WithField("path", TLS_KEYSTORE_PATH).Debug("Attempting to delete TLS keystore")
+	i2plog.WithField("path", TLS_KEYSTORE_PATH).Debug("Attempting to delete TLS keystore")
 	err := os.RemoveAll(TLS_KEYSTORE_PATH)
 	if err != nil {
-		log.WithError(err).WithField("path", TLS_KEYSTORE_PATH).Error("Failed to delete TLS keystore")
+		i2plog.WithError(err).WithField("path", TLS_KEYSTORE_PATH).Error("Failed to delete TLS keystore")
 		return err
 	}
-	log.WithField("path", TLS_KEYSTORE_PATH).Debug("Successfully deleted TLS keystore")
+	i2plog.WithField("path", TLS_KEYSTORE_PATH).Debug("Successfully deleted TLS keystore")
 	return nil
 	//return os.RemoveAll(TLS_KEYSTORE_PATH)
 }
@@ -152,22 +152,22 @@ func DeleteTLSKeyStore() error {
 // network is ignored. If the address ends in i2p, it returns an I2P connection.
 // if the address ends in anything else, it returns a Tor connection.
 func Dial(network, addr string) (net.Conn, error) {
-	log.WithFields(logrus.Fields{
+	i2plog.WithFields(logrus.Fields{
 		"network": network,
 		"address": addr,
 	}).Debug("Attempting to dial")
 
 	url, err := url.Parse(addr)
 	if err != nil {
-		log.WithError(err).WithField("address", addr).Error("Failed to parse address")
+		i2plog.WithError(err).WithField("address", addr).Error("Failed to parse address")
 		return nil, err
 	}
 	hostname := url.Hostname()
 	if strings.HasSuffix(hostname, ".i2p") {
-		log.WithField("hostname", hostname).Debug("Using I2P connection for .i2p address")
+		i2plog.WithField("hostname", hostname).Debug("Using I2P connection for .i2p address")
 		return DialGarlic(network, addr)
 	}
-	log.WithField("hostname", hostname).Debug("Using Tor connection for non-i2p address")
+	i2plog.WithField("hostname", hostname).Debug("Using Tor connection for non-i2p address")
 	return DialOnion(network, addr)
 }
 
@@ -176,31 +176,31 @@ func Dial(network, addr string) (net.Conn, error) {
 // if network is tor or onion, it returns an Onion listener.
 // if keys ends with ".i2p", it returns an I2P listener.
 func Listen(network, keys string) (net.Listener, error) {
-	log.WithFields(logrus.Fields{
+	i2plog.WithFields(logrus.Fields{
 		"network": network,
 		"keys":    keys,
 	}).Debug("Attempting to create listener")
 
 	if network == "i2p" || network == "garlic" {
-		log.Debug("Creating I2P listener based on network type")
+		i2plog.Debug("Creating I2P listener based on network type")
 		return ListenGarlic(network, keys)
 	}
 	if network == "tor" || network == "onion" {
-		log.Debug("Creating Tor listener based on network type")
+		i2plog.Debug("Creating Tor listener based on network type")
 		return ListenOnion(network, keys)
 	}
 
 	url, err := url.Parse(keys)
 	if err != nil {
-		log.WithError(err).WithField("keys", keys).Error("Failed to parse keys URL")
+		i2plog.WithError(err).WithField("keys", keys).Error("Failed to parse keys URL")
 		return nil, err
 	}
 
 	hostname := url.Hostname()
 	if strings.HasSuffix(hostname, ".i2p") {
-		log.WithField("hostname", hostname).Debug("Creating I2P listener based on .i2p hostname")
+		i2plog.WithField("hostname", hostname).Debug("Creating I2P listener based on .i2p hostname")
 		return ListenGarlic(network, keys)
 	}
-	log.WithField("hostname", hostname).Debug("Creating Tor listener for non-i2p hostname")
+	i2plog.WithField("hostname", hostname).Debug("Creating Tor listener for non-i2p hostname")
 	return ListenOnion(network, keys)
 }

@@ -6,7 +6,7 @@ package onramp
 import (
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 )
@@ -23,7 +23,7 @@ func TestBareOnion(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	log.Println("listener:", listener.Addr().String())
+	i2plog.Println("listener:", listener.Addr().String())
 	// defer listener.Close()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q", r.URL.Path)
@@ -44,7 +44,7 @@ func TestBareOnion(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Println("Status:", resp.Status)
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Error(err)
 	}
