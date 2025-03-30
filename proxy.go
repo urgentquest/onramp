@@ -22,20 +22,20 @@ type OnrampProxy struct {
 // and an I2P or Onion address, and it will act as a tunnel to a
 // listening hidden service somewhere.
 func (p *OnrampProxy) Proxy(list net.Listener, raddr string) error {
-	i2pLogger.WithFields(logrus.Fields{
+	log.WithFields(logrus.Fields{
 		"remote_address": raddr,
 		"local_address":  list.Addr().String(),
 	}).Debug("Starting proxy service")
 
 	for {
-		i2pLogger.Debug("Waiting for incoming connection")
+		log.Debug("Waiting for incoming connection")
 		conn, err := list.Accept()
 		if err != nil {
-			i2pLogger.WithError(err).Error("Failed to accept connection")
+			log.WithError(err).Error("Failed to accept connection")
 			return err
 		}
 
-		i2pLogger.WithFields(logrus.Fields{
+		log.WithFields(logrus.Fields{
 			"local_addr":  conn.LocalAddr().String(),
 			"remote_addr": conn.RemoteAddr().String(),
 		}).Debug("Accepted new connection, starting proxy routine")
@@ -45,7 +45,7 @@ func (p *OnrampProxy) Proxy(list net.Listener, raddr string) error {
 }
 
 func (p *OnrampProxy) proxy(conn net.Conn, raddr string) {
-	i2pLogger.WithFields(logrus.Fields{
+	log.WithFields(logrus.Fields{
 		"remote_address": raddr,
 		"local_addr":     conn.LocalAddr().String(),
 		"remote_addr":    conn.RemoteAddr().String(),
@@ -55,22 +55,22 @@ func (p *OnrampProxy) proxy(conn net.Conn, raddr string) {
 	var err error
 	checkaddr := strings.Split(raddr, ":")[0]
 	if strings.HasSuffix(checkaddr, ".i2p") {
-		i2pLogger.Debug("Detected I2P address, using Garlic connection")
+		log.Debug("Detected I2P address, using Garlic connection")
 		remote, err = p.Garlic.Dial("tcp", raddr)
 	} else if strings.HasSuffix(checkaddr, ".onion") {
-		i2pLogger.Debug("Detected Onion address, using Tor connection")
+		log.Debug("Detected Onion address, using Tor connection")
 		remote, err = p.Onion.Dial("tcp", raddr)
 	} else {
-		i2pLogger.Debug("Using standard TCP connection")
+		log.Debug("Using standard TCP connection")
 		remote, err = net.Dial("tcp", raddr)
 	}
 	if err != nil {
-		i2pLogger.WithError(err).Error("Failed to establish remote connection")
-		i2pLogger.Fatal("Cannot dial to remote")
+		log.WithError(err).Error("Failed to establish remote connection")
+		log.Fatal("Cannot dial to remote")
 	}
 	defer remote.Close()
 
-	i2pLogger.WithFields(logrus.Fields{
+	log.WithFields(logrus.Fields{
 		"local_addr":  remote.LocalAddr().String(),
 		"remote_addr": remote.RemoteAddr().String(),
 	}).Debug("Remote connection established, starting bidirectional copy")

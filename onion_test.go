@@ -23,7 +23,7 @@ func TestBareOnion(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	i2pLogger.Println("listener:", listener.Addr().String())
+	log.Println("listener:", listener.Addr().String())
 	// defer listener.Close()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q", r.URL.Path)
