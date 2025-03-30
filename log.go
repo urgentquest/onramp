@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	i2plog *logger.Logger
+	i2pLogger *logger.Logger
 )
 
 func init() {
-	i2plog = logger.GetGoI2PLogger()
+	i2pLogger = logger.GetGoI2PLogger()
 }

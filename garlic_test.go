@@ -25,7 +25,7 @@ func TestBareGarlic(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	i2plog.Println("listener:", listener.Addr().String())
+	i2pLogger.Println("listener:", listener.Addr().String())
 	defer listener.Close()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q", r.URL.Path)
@@ -62,7 +62,7 @@ func TestBareGarlic(t *testing.T) {
 
 func Serve(listener net.Listener) {
 	if err := http.Serve(listener, nil); err != nil {
-		i2plog.Fatal(err)
+		i2pLogger.Fatal(err)
 	}
 }
 
@@ -70,6 +70,6 @@ func Sleep(count int) {
 	for i := 0; i < count; i++ {
 		time.Sleep(time.Second)
 		x := count - i
-		i2plog.Printf("Waiting: %d seconds\n", x)
+		i2pLogger.Printf("Waiting: %d seconds\n", x)
 	}
 }

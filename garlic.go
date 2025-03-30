@@ -101,35 +101,35 @@ func (g *Garlic) getOptions() []string {
 
 func (g *Garlic) samSession() (*sam3.SAM, error) {
 	if g.SAM == nil {
-		i2plog.WithField("address", g.getAddr()).Debug("Creating new SAM session")
+		i2pLogger.WithField("address", g.getAddr()).Debug("Creating new SAM session")
 		var err error
 		g.SAM, err = sam3.NewSAM(g.getAddr())
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to create SAM session")
+			i2pLogger.WithError(err).Error("Failed to create SAM session")
 			return nil, fmt.Errorf("onramp samSession: %v", err)
 		}
-		i2plog.Debug("SAM session created successfully")
+		i2pLogger.Debug("SAM session created successfully")
 	}
 	return g.SAM, nil
 }
 
 func (g *Garlic) setupStreamSession() (*sam3.StreamSession, error) {
 	if g.StreamSession == nil {
-		i2plog.WithField("name", g.getName()).Debug("Setting up stream session")
+		i2pLogger.WithField("name", g.getName()).Debug("Setting up stream session")
 		var err error
 		g.ServiceKeys, err = g.Keys()
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to get keys for stream session")
+			i2pLogger.WithError(err).Error("Failed to get keys for stream session")
 			return nil, fmt.Errorf("onramp setupStreamSession: %v", err)
 		}
-		i2plog.WithField("address", g.ServiceKeys.Address.Base32()).Debug("Creating stream session with keys")
-		i2plog.Println("Creating stream session with keys:", g.ServiceKeys.Address.Base32())
+		i2pLogger.WithField("address", g.ServiceKeys.Address.Base32()).Debug("Creating stream session with keys")
+		i2pLogger.Println("Creating stream session with keys:", g.ServiceKeys.Address.Base32())
 		g.StreamSession, err = g.SAM.NewStreamSession(g.getName(), *g.ServiceKeys, g.getOptions())
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to create stream session")
+			i2pLogger.WithError(err).Error("Failed to create stream session")
 			return nil, fmt.Errorf("onramp setupStreamSession: %v", err)
 		}
-		i2plog.Debug("Stream session created successfully")
+		i2pLogger.Debug("Stream session created successfully")
 		return g.StreamSession, nil
 	}
 	return g.StreamSession, nil
@@ -137,43 +137,43 @@ func (g *Garlic) setupStreamSession() (*sam3.StreamSession, error) {
 
 func (g *Garlic) setupDatagramSession() (*sam3.DatagramSession, error) {
 	if g.DatagramSession == nil {
-		i2plog.WithField("name", g.getName()).Debug("Setting up datagram session")
+		i2pLogger.WithField("name", g.getName()).Debug("Setting up datagram session")
 		var err error
 		g.ServiceKeys, err = g.Keys()
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to get keys for datagram session")
+			i2pLogger.WithError(err).Error("Failed to get keys for datagram session")
 			return nil, fmt.Errorf("onramp setupDatagramSession: %v", err)
 		}
-		i2plog.WithField("address", g.ServiceKeys.Address.Base32()).Debug("Creating datagram session with keys")
-		i2plog.Println("Creating datagram session with keys:", g.ServiceKeys.Address.Base32())
+		i2pLogger.WithField("address", g.ServiceKeys.Address.Base32()).Debug("Creating datagram session with keys")
+		i2pLogger.Println("Creating datagram session with keys:", g.ServiceKeys.Address.Base32())
 		g.DatagramSession, err = g.SAM.NewDatagramSession(g.getName(), *g.ServiceKeys, g.getOptions(), 0)
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to create datagram session")
+			i2pLogger.WithError(err).Error("Failed to create datagram session")
 			return nil, fmt.Errorf("onramp setupDatagramSession: %v", err)
 		}
-		i2plog.Debug("Datagram session created successfully")
+		i2pLogger.Debug("Datagram session created successfully")
 		return g.DatagramSession, nil
 	}
 
-	i2plog.Debug("Using existing datagram session")
+	i2pLogger.Debug("Using existing datagram session")
 	return g.DatagramSession, nil
 }
 
 // NewListener returns a net.Listener for the Garlic structure's I2P keys.
 // accepts a variable list of arguments, arguments after the first one are ignored.
 func (g *Garlic) NewListener(n, addr string) (net.Listener, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"network": n,
 		"address": addr,
 		"name":    g.getName(),
 	}).Debug("Creating new listener")
 	listener, err := g.Listen(n)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to create listener")
+		i2pLogger.WithError(err).Error("Failed to create listener")
 		return nil, err
 	}
 
-	i2plog.Debug("Successfully created listener")
+	i2pLogger.Debug("Successfully created listener")
 	return listener, nil
 	// return g.Listen(n)
 }
@@ -181,18 +181,18 @@ func (g *Garlic) NewListener(n, addr string) (net.Listener, error) {
 // Listen returns a net.Listener for the Garlic structure's I2P keys.
 // accepts a variable list of arguments, arguments after the first one are ignored.
 func (g *Garlic) Listen(args ...string) (net.Listener, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"args": args,
 		"name": g.getName(),
 	}).Debug("Setting up listener")
 
 	listener, err := g.OldListen(args...)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to create listener")
+		i2pLogger.WithError(err).Error("Failed to create listener")
 		return nil, err
 	}
 
-	i2plog.Debug("Successfully created listener")
+	i2pLogger.Debug("Successfully created listener")
 	return listener, nil
 	// return g.OldListen(args...)
 }
@@ -200,68 +200,68 @@ func (g *Garlic) Listen(args ...string) (net.Listener, error) {
 // OldListen returns a net.Listener for the Garlic structure's I2P keys.
 // accepts a variable list of arguments, arguments after the first one are ignored.
 func (g *Garlic) OldListen(args ...string) (net.Listener, error) {
-	i2plog.WithField("args", args).Debug("Starting OldListen")
+	i2pLogger.WithField("args", args).Debug("Starting OldListen")
 	if len(args) > 0 {
 		protocol := args[0]
-		i2plog.WithField("protocol", protocol).Debug("Checking protocol type")
+		i2pLogger.WithField("protocol", protocol).Debug("Checking protocol type")
 		// if args[0] == "tcp" || args[0] == "tcp6" || args[0] == "st" || args[0] == "st6" {
 		if protocol == "tcp" || protocol == "tcp6" || protocol == "st" || protocol == "st6" {
-			i2plog.Debug("Using TCP stream listener")
+			i2pLogger.Debug("Using TCP stream listener")
 			return g.ListenStream()
 			//} else if args[0] == "udp" || args[0] == "udp6" || args[0] == "dg" || args[0] == "dg6" {
 		} else if protocol == "udp" || protocol == "udp6" || protocol == "dg" || protocol == "dg6" {
-			i2plog.Debug("Using UDP datagram listener")
+			i2pLogger.Debug("Using UDP datagram listener")
 			pk, err := g.ListenPacket()
 			if err != nil {
-				i2plog.WithError(err).Error("Failed to create packet listener")
+				i2pLogger.WithError(err).Error("Failed to create packet listener")
 				return nil, err
 			}
-			i2plog.Debug("Successfully created datagram session")
+			i2pLogger.Debug("Successfully created datagram session")
 			return pk.(*sam3.DatagramSession), nil
 		}
 
 	}
-	i2plog.Debug("No protocol specified, defaulting to stream listener")
+	i2pLogger.Debug("No protocol specified, defaulting to stream listener")
 	return g.ListenStream()
 }
 
 // Listen returns a net.Listener for the Garlic structure's I2P keys.
 func (g *Garlic) ListenStream() (net.Listener, error) {
-	i2plog.Debug("Setting up stream listener")
+	i2pLogger.Debug("Setting up stream listener")
 	var err error
 	if g.SAM, err = g.samSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to create SAM session for stream listener")
+		i2pLogger.WithError(err).Error("Failed to create SAM session for stream listener")
 		return nil, fmt.Errorf("onramp NewGarlic: %v", err)
 	}
 	if g.StreamSession, err = g.setupStreamSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to setup stream session")
+		i2pLogger.WithError(err).Error("Failed to setup stream session")
 		return nil, fmt.Errorf("onramp Listen: %v", err)
 	}
 	if g.StreamListener == nil {
-		i2plog.Debug("Creating new stream listener")
+		i2pLogger.Debug("Creating new stream listener")
 		g.StreamListener, err = g.StreamSession.Listen()
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to create stream listener")
+			i2pLogger.WithError(err).Error("Failed to create stream listener")
 			return nil, fmt.Errorf("onramp Listen: %v", err)
 		}
-		i2plog.Debug("Stream listener created successfully")
+		i2pLogger.Debug("Stream listener created successfully")
 	}
 	return g.StreamListener, nil
 }
 
 // ListenPacket returns a net.PacketConn for the Garlic structure's I2P keys.
 func (g *Garlic) ListenPacket() (net.PacketConn, error) {
-	i2plog.Debug("Setting up packet connection")
+	i2pLogger.Debug("Setting up packet connection")
 	var err error
 	if g.SAM, err = g.samSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to create SAM session for packet connection")
+		i2pLogger.WithError(err).Error("Failed to create SAM session for packet connection")
 		return nil, fmt.Errorf("onramp NewGarlic: %v", err)
 	}
 	if g.DatagramSession, err = g.setupDatagramSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to setup datagram session")
+		i2pLogger.WithError(err).Error("Failed to setup datagram session")
 		return nil, fmt.Errorf("onramp Listen: %v", err)
 	}
-	i2plog.Debug("Packet connection successfully established")
+	i2pLogger.Debug("Packet connection successfully established")
 	return g.DatagramSession, nil
 }
 
@@ -269,24 +269,24 @@ func (g *Garlic) ListenPacket() (net.PacketConn, error) {
 // which also uses TLS either for additional encryption, authentication,
 // or browser-compatibility.
 func (g *Garlic) ListenTLS(args ...string) (net.Listener, error) {
-	i2plog.WithField("args", args).Debug("Starting TLS listener")
+	i2pLogger.WithField("args", args).Debug("Starting TLS listener")
 	listener, err := g.Listen(args...)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to create base listener")
+		i2pLogger.WithError(err).Error("Failed to create base listener")
 		return nil, err
 	}
 	cert, err := g.TLSKeys()
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to get TLS keys")
+		i2pLogger.WithError(err).Error("Failed to get TLS keys")
 		return nil, fmt.Errorf("onramp ListenTLS: %v", err)
 	}
 	if len(args) > 0 {
 		protocol := args[0]
-		i2plog.WithField("protocol", protocol).Debug("Creating TLS listener for protocol")
+		i2pLogger.WithField("protocol", protocol).Debug("Creating TLS listener for protocol")
 
 		// if args[0] == "tcp" || args[0] == "tcp6" || args[0] == "st" || args[0] == "st6" {
 		if protocol == "tcp" || protocol == "tcp6" || protocol == "st" || protocol == "st6" {
-			i2plog.Debug("Creating TLS stream listener")
+			i2pLogger.Debug("Creating TLS stream listener")
 			return tls.NewListener(
 				g.StreamListener,
 				&tls.Config{
@@ -295,7 +295,7 @@ func (g *Garlic) ListenTLS(args ...string) (net.Listener, error) {
 			), nil
 			//} else if args[0] == "udp" || args[0] == "udp6" || args[0] == "dg" || args[0] == "dg6" {
 		} else if protocol == "udp" || protocol == "udp6" || protocol == "dg" || protocol == "dg6" {
-			i2plog.Debug("Creating TLS datagram listener")
+			i2pLogger.Debug("Creating TLS datagram listener")
 			return tls.NewListener(
 				g.DatagramSession,
 				&tls.Config{
@@ -305,10 +305,10 @@ func (g *Garlic) ListenTLS(args ...string) (net.Listener, error) {
 		}
 
 	} else {
-		i2plog.Debug("No protocol specified, using stream listener")
+		i2pLogger.Debug("No protocol specified, using stream listener")
 		g.StreamListener = listener.(*sam3.StreamListener)
 	}
-	i2plog.Debug("Successfully created TLS listener")
+	i2pLogger.Debug("Successfully created TLS listener")
 	return tls.NewListener(
 		g.StreamListener,
 		&tls.Config{
@@ -319,86 +319,86 @@ func (g *Garlic) ListenTLS(args ...string) (net.Listener, error) {
 
 // Dial returns a net.Conn for the Garlic structure's I2P keys.
 func (g *Garlic) Dial(net, addr string) (net.Conn, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"network": net,
 		"address": addr,
 	}).Debug("Attempting to dial")
 	if !strings.Contains(addr, ".i2p") {
-		i2plog.Debug("Non-I2P address detected, returning null connection")
+		i2pLogger.Debug("Non-I2P address detected, returning null connection")
 		return &NullConn{}, nil
 	}
 	var err error
 	if g.SAM, err = g.samSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to create SAM session")
+		i2pLogger.WithError(err).Error("Failed to create SAM session")
 		return nil, fmt.Errorf("onramp NewGarlic: %v", err)
 	}
 	if g.StreamSession, err = g.setupStreamSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to setup stream session")
+		i2pLogger.WithError(err).Error("Failed to setup stream session")
 		return nil, fmt.Errorf("onramp Dial: %v", err)
 	}
-	i2plog.Debug("Attempting to establish connection")
+	i2pLogger.Debug("Attempting to establish connection")
 	conn, err := g.StreamSession.Dial(net, addr)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to establish connection")
+		i2pLogger.WithError(err).Error("Failed to establish connection")
 		return nil, err
 	}
-	i2plog.Debug("Successfully established connection")
+	i2pLogger.Debug("Successfully established connection")
 	return conn, nil
 	// return g.StreamSession.Dial(net, addr)
 }
 
 // DialContext returns a net.Conn for the Garlic structure's I2P keys.
 func (g *Garlic) DialContext(ctx context.Context, net, addr string) (net.Conn, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"network": net,
 		"address": addr,
 	}).Debug("Attempting to dial with context")
 	if !strings.Contains(addr, ".i2p") {
-		i2plog.Debug("Non-I2P address detected, returning null connection")
+		i2pLogger.Debug("Non-I2P address detected, returning null connection")
 		return &NullConn{}, nil
 	}
 	var err error
 	if g.SAM, err = g.samSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to create SAM session")
+		i2pLogger.WithError(err).Error("Failed to create SAM session")
 		return nil, fmt.Errorf("onramp NewGarlic: %v", err)
 	}
 	if g.StreamSession, err = g.setupStreamSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to setup stream session")
+		i2pLogger.WithError(err).Error("Failed to setup stream session")
 		return nil, fmt.Errorf("onramp Dial: %v", err)
 	}
-	i2plog.Debug("Attempting to establish connection with context")
+	i2pLogger.Debug("Attempting to establish connection with context")
 	conn, err := g.StreamSession.DialContext(ctx, net, addr)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to establish connection")
+		i2pLogger.WithError(err).Error("Failed to establish connection")
 		return nil, err
 	}
 
-	i2plog.Debug("Successfully established connection")
+	i2pLogger.Debug("Successfully established connection")
 	return conn, nil
 	// return g.StreamSession.DialContext(ctx, net, addr)
 }
 
 // Close closes the Garlic structure's sessions and listeners.
 func (g *Garlic) Close() error {
-	i2plog.WithField("name", g.getName()).Debug("Closing Garlic sessions")
+	i2pLogger.WithField("name", g.getName()).Debug("Closing Garlic sessions")
 	e1 := g.StreamSession.Close()
 	var err error
 	if e1 != nil {
-		i2plog.WithError(e1).Error("Failed to close stream session")
+		i2pLogger.WithError(e1).Error("Failed to close stream session")
 		err = fmt.Errorf("onramp Close: %v", e1)
 	} else {
-		i2plog.Debug("Stream session closed successfully")
+		i2pLogger.Debug("Stream session closed successfully")
 	}
 	e2 := g.SAM.Close()
 	if e2 != nil {
-		i2plog.WithError(e2).Error("Failed to close SAM session")
+		i2pLogger.WithError(e2).Error("Failed to close SAM session")
 		err = fmt.Errorf("onramp Close: %v %v", e1, e2)
 	} else {
-		i2plog.Debug("SAM session closed successfully")
+		i2pLogger.Debug("SAM session closed successfully")
 	}
 
 	if err == nil {
-		i2plog.Debug("All sessions closed successfully")
+		i2pLogger.Debug("All sessions closed successfully")
 	}
 
 	return err
@@ -407,35 +407,35 @@ func (g *Garlic) Close() error {
 // Keys returns the I2PKeys for the Garlic structure. If none
 // exist, they are created and stored.
 func (g *Garlic) Keys() (*i2pkeys.I2PKeys, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"name":    g.getName(),
 		"address": g.getAddr(),
 	}).Debug("Retrieving I2P keys")
 
 	keys, err := I2PKeys(g.getName(), g.getAddr())
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to get I2P keys")
+		i2pLogger.WithError(err).Error("Failed to get I2P keys")
 		return &i2pkeys.I2PKeys{}, fmt.Errorf("onramp Keys: %v", err)
 	}
-	i2plog.Debug("Successfully retrieved I2P keys")
+	i2pLogger.Debug("Successfully retrieved I2P keys")
 	return &keys, nil
 }
 
 func (g *Garlic) DeleteKeys() error {
 	// return DeleteGarlicKeys(g.getName())
-	i2plog.WithField("name", g.getName()).Debug("Attempting to delete Garlic keys")
+	i2pLogger.WithField("name", g.getName()).Debug("Attempting to delete Garlic keys")
 	err := DeleteGarlicKeys(g.getName())
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to delete Garlic keys")
+		i2pLogger.WithError(err).Error("Failed to delete Garlic keys")
 	}
-	i2plog.Debug("Successfully deleted Garlic keys")
+	i2pLogger.Debug("Successfully deleted Garlic keys")
 	return err
 }
 
 // NewGarlic returns a new Garlic struct. It is immediately ready to use with
 // I2P streaming.
 func NewGarlic(tunName, samAddr string, options []string) (*Garlic, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"tunnel_name": tunName,
 		"sam_address": samAddr,
 		"options":     options,
@@ -447,15 +447,15 @@ func NewGarlic(tunName, samAddr string, options []string) (*Garlic, error) {
 	g.opts = options
 	var err error
 	if g.SAM, err = g.samSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to create SAM session")
+		i2pLogger.WithError(err).Error("Failed to create SAM session")
 		return nil, fmt.Errorf("onramp NewGarlic: %v", err)
 	}
 	if g.StreamSession, err = g.setupStreamSession(); err != nil {
-		i2plog.WithError(err).Error("Failed to setup stream session")
+		i2pLogger.WithError(err).Error("Failed to setup stream session")
 		return nil, fmt.Errorf("onramp NewGarlic: %v", err)
 	}
 
-	i2plog.Debug("Successfully created new Garlic instance")
+	i2pLogger.Debug("Successfully created new Garlic instance")
 	return g, nil
 }
 
@@ -464,74 +464,74 @@ func NewGarlic(tunName, samAddr string, options []string) (*Garlic, error) {
 // This is permanent and irreversible, and will change the onion service
 // address.
 func DeleteGarlicKeys(tunName string) error {
-	i2plog.WithField("tunnel_name", tunName).Debug("Attempting to delete Garlic keys")
+	i2pLogger.WithField("tunnel_name", tunName).Debug("Attempting to delete Garlic keys")
 	keystore, err := I2PKeystorePath()
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to get keystore path")
+		i2pLogger.WithError(err).Error("Failed to get keystore path")
 		return fmt.Errorf("onramp DeleteGarlicKeys: discovery error %v", err)
 	}
 	keyspath := filepath.Join(keystore, tunName+".i2p.private")
-	i2plog.WithField("path", keyspath).Debug("Deleting key file")
+	i2pLogger.WithField("path", keyspath).Debug("Deleting key file")
 	if err := os.Remove(keyspath); err != nil {
-		i2plog.WithError(err).WithField("path", keyspath).Error("Failed to delete key file")
+		i2pLogger.WithError(err).WithField("path", keyspath).Error("Failed to delete key file")
 		return fmt.Errorf("onramp DeleteGarlicKeys: %v", err)
 	}
-	i2plog.Debug("Successfully deleted Garlic keys")
+	i2pLogger.Debug("Successfully deleted Garlic keys")
 	return nil
 }
 
 // I2PKeys returns the I2PKeys at the keystore directory for the given
 // tunnel name. If none exist, they are created and stored.
 func I2PKeys(tunName, samAddr string) (i2pkeys.I2PKeys, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"tunnel_name": tunName,
 		"sam_address": samAddr,
 	}).Debug("Looking up I2P keys")
 
 	keystore, err := I2PKeystorePath()
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to get keystore path")
+		i2pLogger.WithError(err).Error("Failed to get keystore path")
 		return i2pkeys.I2PKeys{}, fmt.Errorf("onramp I2PKeys: discovery error %v", err)
 	}
 	keyspath := filepath.Join(keystore, tunName+".i2p.private")
-	i2plog.WithField("path", keyspath).Debug("Checking for existing keys")
+	i2pLogger.WithField("path", keyspath).Debug("Checking for existing keys")
 	info, err := os.Stat(keyspath)
 	if info != nil {
 		if info.Size() == 0 {
-			i2plog.WithField("path", keyspath).Debug("Keystore empty, will regenerate keys")
-			i2plog.Println("onramp I2PKeys: keystore empty, re-generating keys")
+			i2pLogger.WithField("path", keyspath).Debug("Keystore empty, will regenerate keys")
+			i2pLogger.Println("onramp I2PKeys: keystore empty, re-generating keys")
 		} else {
-			i2plog.WithField("path", keyspath).Debug("Found existing keystore")
+			i2pLogger.WithField("path", keyspath).Debug("Found existing keystore")
 		}
 	}
 	if err != nil {
-		i2plog.WithField("path", keyspath).Debug("Keys not found, generating new keys")
+		i2pLogger.WithField("path", keyspath).Debug("Keys not found, generating new keys")
 		sam, err := sam3.NewSAM(samAddr)
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to create SAM connection")
+			i2pLogger.WithError(err).Error("Failed to create SAM connection")
 			return i2pkeys.I2PKeys{}, fmt.Errorf("onramp I2PKeys: SAM error %v", err)
 		}
-		i2plog.Debug("SAM connection established")
+		i2pLogger.Debug("SAM connection established")
 		keys, err := sam.NewKeys(tunName)
 		if err != nil {
-			i2plog.WithError(err).Error("Failed to generate new keys")
+			i2pLogger.WithError(err).Error("Failed to generate new keys")
 			return i2pkeys.I2PKeys{}, fmt.Errorf("onramp I2PKeys: keygen error %v", err)
 		}
-		i2plog.Debug("New keys generated successfully")
+		i2pLogger.Debug("New keys generated successfully")
 		if err = i2pkeys.StoreKeys(keys, keyspath); err != nil {
-			i2plog.WithError(err).WithField("path", keyspath).Error("Failed to store generated keys")
+			i2pLogger.WithError(err).WithField("path", keyspath).Error("Failed to store generated keys")
 			return i2pkeys.I2PKeys{}, fmt.Errorf("onramp I2PKeys: store error %v", err)
 		}
-		i2plog.WithField("path", keyspath).Debug("Successfully stored new keys")
+		i2pLogger.WithField("path", keyspath).Debug("Successfully stored new keys")
 		return keys, nil
 	} else {
-		i2plog.WithField("path", keyspath).Debug("Loading existing keys")
+		i2pLogger.WithField("path", keyspath).Debug("Loading existing keys")
 		keys, err := i2pkeys.LoadKeys(keyspath)
 		if err != nil {
-			i2plog.WithError(err).WithField("path", keyspath).Error("Failed to load existing keys")
+			i2pLogger.WithError(err).WithField("path", keyspath).Error("Failed to load existing keys")
 			return i2pkeys.I2PKeys{}, fmt.Errorf("onramp I2PKeys: load error %v", err)
 		}
-		i2plog.Debug("Successfully loaded existing keys")
+		i2pLogger.Debug("Successfully loaded existing keys")
 		return keys, nil
 	}
 }
@@ -541,35 +541,35 @@ var garlics map[string]*Garlic
 // CloseAllGarlic closes all garlics managed by the onramp package. It does not
 // affect objects instantiated by an app.
 func CloseAllGarlic() {
-	i2plog.WithField("count", len(garlics)).Debug("Closing all Garlic connections")
+	i2pLogger.WithField("count", len(garlics)).Debug("Closing all Garlic connections")
 	for i, g := range garlics {
-		i2plog.WithFields(logrus.Fields{
+		i2pLogger.WithFields(logrus.Fields{
 			"index": i,
 			"name":  g.name,
 		}).Debug("Closing Garlic connection")
 
-		i2plog.Println("Closing garlic", g.name)
+		i2pLogger.Println("Closing garlic", g.name)
 		CloseGarlic(i)
 	}
-	i2plog.Debug("All Garlic connections closed")
+	i2pLogger.Debug("All Garlic connections closed")
 }
 
 // CloseGarlic closes the Garlic at the given index. It does not affect Garlic
 // objects instantiated by an app.
 func CloseGarlic(tunName string) {
-	i2plog.WithField("tunnel_name", tunName).Debug("Attempting to close Garlic connection")
+	i2pLogger.WithField("tunnel_name", tunName).Debug("Attempting to close Garlic connection")
 	g, ok := garlics[tunName]
 	if ok {
-		i2plog.Debug("Found Garlic connection, closing")
+		i2pLogger.Debug("Found Garlic connection, closing")
 		// g.Close()
 		err := g.Close()
 		if err != nil {
-			i2plog.WithError(err).Error("Error closing Garlic connection")
+			i2pLogger.WithError(err).Error("Error closing Garlic connection")
 		} else {
-			i2plog.Debug("Successfully closed Garlic connection")
+			i2pLogger.Debug("Successfully closed Garlic connection")
 		}
 	} else {
-		i2plog.Debug("No Garlic connection found for tunnel name")
+		i2pLogger.Debug("No Garlic connection found for tunnel name")
 	}
 }
 
@@ -581,18 +581,18 @@ var SAM_ADDR = "127.0.0.1:7656"
 // corresponding to a structure managed by the onramp library
 // and not instantiated by an app.
 func ListenGarlic(network, keys string) (net.Listener, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"network":  network,
 		"keys":     keys,
 		"sam_addr": SAM_ADDR,
 	}).Debug("Creating new Garlic listener")
 	g, err := NewGarlic(keys, SAM_ADDR, OPT_DEFAULTS)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to create new Garlic")
+		i2pLogger.WithError(err).Error("Failed to create new Garlic")
 		return nil, fmt.Errorf("onramp Listen: %v", err)
 	}
 	garlics[keys] = g
-	i2plog.Debug("Successfully created Garlic listener")
+	i2pLogger.Debug("Successfully created Garlic listener")
 	return g.Listen()
 }
 
@@ -600,7 +600,7 @@ func ListenGarlic(network, keys string) (net.Listener, error) {
 // corresponding to a structure managed by the onramp library
 // and not instantiated by an app.
 func DialGarlic(network, addr string) (net.Conn, error) {
-	i2plog.WithFields(logrus.Fields{
+	i2pLogger.WithFields(logrus.Fields{
 		"network":  network,
 		"address":  addr,
 		"sam_addr": SAM_ADDR,
@@ -608,18 +608,18 @@ func DialGarlic(network, addr string) (net.Conn, error) {
 
 	g, err := NewGarlic(addr, SAM_ADDR, OPT_DEFAULTS)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to create new Garlic")
+		i2pLogger.WithError(err).Error("Failed to create new Garlic")
 		return nil, fmt.Errorf("onramp Dial: %v", err)
 	}
 	garlics[addr] = g
-	i2plog.WithField("address", addr).Debug("Attempting to dial")
+	i2pLogger.WithField("address", addr).Debug("Attempting to dial")
 	conn, err := g.Dial(network, addr)
 	if err != nil {
-		i2plog.WithError(err).Error("Failed to dial connection")
+		i2pLogger.WithError(err).Error("Failed to dial connection")
 		return nil, err
 	}
 
-	i2plog.Debug("Successfully established Garlic connection")
+	i2pLogger.Debug("Successfully established Garlic connection")
 	return conn, nil
 	// return g.Dial(network, addr)
 }
